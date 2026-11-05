@@ -88,6 +88,11 @@ class ScribbleHubPlugin implements Plugin.PluginBase {
     }: Plugin.PopularNovelsOptions<typeof this.filters>,
   ): Promise<Plugin.NovelItem[]> {
     let url = `${this.site}`;
+
+    const date = new Date();
+    date.setDate(date.getDate() - 1); // change to yesterday
+    const lastUpdateMinDate = `${date.getMonth() + 1}/${date.getDate()}/${date.getFullYear()}`;
+
     if (showLatestNovels) {
       url += `latest-series/?pg=${page}`;
     } else if (filters) {
@@ -122,7 +127,15 @@ class ScribbleHubPlugin implements Plugin.PluginBase {
       params.append('pg', page.toString());
       url += `series-finder/?sf=1&${params.toString()}`;
     } else {
-      url += `series-finder/?sf=1&sort=pageviews&order=desc&pg=${page}`;
+      url += `series-finder/?sf=1&sort=pageviews&order=desc&pg=${page}&mnlcd=${lastUpdateMinDate}`;
+    }
+
+    // if default url, only show last 2 days novels
+    if (
+      url ==
+      `${this.site}series-finder/?sf=1&cp=all&sort=pageviews&order=desc&pg=${page}`
+    ) {
+      url += `&mnlcd=${lastUpdateMinDate}`;
     }
 
     const body = await fetchApi(url).then(result => result.text());
