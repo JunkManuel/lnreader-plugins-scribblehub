@@ -194,7 +194,7 @@ class ScribbleHubPlugin implements Plugin.PluginBase {
   }
 
   async parseNovel(novelPath: string): Promise<Plugin.SourceNovel> {
-    const result = await fetchApi(this.site + novelPath);
+    const result = await fetchApi(this.site + novelPath + '?toc=-1');
     const body = await result.text();
 
     const loadedCheerio = parseHTML(body);
